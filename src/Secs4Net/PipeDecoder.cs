@@ -114,7 +114,9 @@ public sealed class PipeDecoder
                 buffer = await PipeReadAsync(reader, required: 1, cancellation).ConfigureAwait(false);
             }
 #if NET
-            Item.DecodeFormatAndLengthByteCount(buffer.FirstSpan.DangerousGetReferenceAt(0), out var itemFormat, out var itemContentLengthByteCount);
+            var itemLenByte = buffer.Slice(0, 1).ToArray()[0];
+            Item.DecodeFormatAndLengthByteCount(itemLenByte, out var itemFormat, out var itemContentLengthByteCount);
+            //Item.DecodeFormatAndLengthByteCount(buffer.FirstSpan.DangerousGetReferenceAt(0), out var itemFormat, out var itemContentLengthByteCount);
 #else
             Item.DecodeFormatAndLengthByteCount(buffer.First.Span.DangerousGetReferenceAt(0), out var itemFormat, out var itemContentLengthByteCount);
 #endif
